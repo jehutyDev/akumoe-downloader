@@ -4,6 +4,7 @@
 // @namespace    http://tampermonkey.net/
 // @version      1.0
 // @author       Jehuty
+// @license      GPL3
 // @supportURL   https://github.com/jehutyDev/akumoe-downloader/issues
 // @match        https://akuma.moe/g/*
 // @exclude      https://akuma.moe/g/*/*
@@ -11966,6 +11967,13 @@
 
 
 	// ====Functions====
+	const beforeUnloadHandler = (event) => {
+		// Recommended
+		event.preventDefault();
+
+		// Included for legacy support, e.g. Chrome/Edge < 119
+		event.returnValue = true;
+	};
 
 	var replaceHTMLEntites = (str) => {
 		var matchEntity = (entity) => {
@@ -12255,6 +12263,7 @@
 	// Main process
 	var ak_worker = () => {
 		var ak_info_transcurred = document.getElementById("ak_info_transcurred");
+		window.addEventListener("beforeunload", beforeUnloadHandler);
 		ak_tick(() =>{
 			if(ak_getPages()) {
 				if(ak_enqueue() && compressingFile) {
@@ -12268,6 +12277,8 @@
 						btnd.classList.add("btn-success");
 						btnd.style.color = "white";
 						btnd.textContent = "Complete!";
+
+						window.removeEventListener("beforeunload", beforeUnloadHandler);
 					}, 1000);
 				}
 			}
@@ -12368,13 +12379,5 @@
 		ak_createInfoSection();
 		ak_installDownloadBtn();
 	}, 200);
-
-	window.addEventListener("beforeunload", (event) => {
-		event.preventDefault();
-		event.returnValue = '';
-		if(ak_isWorking()) {
-			return confirm("Are you sure you want leave?");
-		}
-	});
 
 })();
