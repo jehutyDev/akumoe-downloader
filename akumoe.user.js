@@ -12371,10 +12371,10 @@
 
 	window.addEventListener("beforeunload", (event) => {
 		event.preventDefault();
+		event.returnValue = '';
 		if(ak_isWorking()) {
 			return confirm("Are you sure you want leave?");
 		}
-		return event.returnValue = '';
 	});
 
 })();
